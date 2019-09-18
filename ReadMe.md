@@ -2,4 +2,4 @@
 
 Shows the target's last action for a few seconds.
 
-![Example]()
+![Example](https://github.com/Akirane/enemyaction/blob/master/enemyaction.PNG)
