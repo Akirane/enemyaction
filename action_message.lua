@@ -42,6 +42,9 @@ function action_message:update(id, data)
         if target ~= nil then
 			local action = self.tracker.tracked_actions[target.id]
 			if action ~= nil then 
+				if (action.updated == false) then
+					self.message_box:color(255, 255, 255, 255)
+				end
 				self.message_box:show()
 			else
 				self.message_box:hide()
@@ -64,6 +67,10 @@ function action_message:prerender_update()
     if target ~= nil then
 		local action = self.tracker.tracked_actions[target.id]
 		if action ~= nil and target.id == action.actor_id then 
+			if (os.time() - action.time > 5) and (action.updated == false) then
+				self.message_box:color(100, 100, 255)
+				action.updated = true
+			end
 			self.message_box:text(action.ability.name)
 			self.message_box:show()
 		else

@@ -144,7 +144,7 @@ function action_tracking:track_actions(ai)
         -- cast was interrupted
         self.tracked_actions[ai.actor_id] = nil;
     else
-        self.tracked_actions[ai.actor_id] = {actor_id=actor_id, target_id=ai.targets[1].id, ability=action_map, complete=false, time=os.time()}
+        self.tracked_actions[ai.actor_id] = {actor_id=actor_id, target_id=ai.targets[1].id, ability=action_map, complete=false, time=os.time(), updated=false}
     end
 end
 
@@ -155,10 +155,9 @@ function action_tracking:clean_tracked_actions()
     local time = os.time()
     for id,action in pairs(self.tracked_actions) do
         -- for incomplete items, timeout at 30s.
-        if  (time - action.time > 10) then
+        if (time - action.time > 30) then
             self.tracked_actions[id] = nil
             return true
-        -- for complete actions, timeout at 3s.
         else
             return false
         end
