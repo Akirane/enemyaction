@@ -14,8 +14,8 @@ local action_msg_obj = nil
 local ready = false
 
 function initialize()
-    player_id = windower.ffxi.get_player().id
     action_msg_obj = action_message:new(nil)
+	action_msg_obj:update_player_id()
     ready = true
 end
 
@@ -28,12 +28,13 @@ end)
 
 windower.register_event('incoming chunk', function(id, data)
     if action_msg_obj ~= nil then
-        action_msg_obj:update(id, data)
+        action_msg_obj:update(id, data, player_id)
     end
 end)
 
 windower.register_event('zone change', function()
     if action_msg_obj ~= nil then
+		action_msg_obj:update_player_id()
         action_msg_obj:reset_tracked_actions()
     end
 end)

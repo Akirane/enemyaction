@@ -32,83 +32,16 @@ end
 
 function action_tracking:handle_action_packet(id, data)
     if 0x028 == id then
-        -- print(id)
         local ai = windower.packets.parse_action(data)
 
-        -- track_enmity(ai)
         if (ai ~= nil) then
             self:track_actions(ai)
         end
-        -- track_debuffs(ai)
-    -- elseif 0x029 then
-    --     local message_id = data:unpack('H',0x19)
-    --     if not message_id then return end
-    --     message_id = message_id%0x8000
-    --     local param_1 = data:unpack('I',0x0D)
-    --     local target_id = data:unpack('I',0x09)
-    --     if wears_off_message_ids:contains(message_id) then
-    --         -- wears off message.
-    --         if tracked_debuff[target_id]  then
-    --             tracked_debuff[target_id][param_1] = nil
-    --         end
-    --     end
         return true
     else
         return false
     end
 end
-
-
--- function action_tracking:parse_party_packets(id, data)
---     if id == 0x0DD then 
---         self:cache_party_members()
---     elseif id == 0x067 then
---         local p =  parse('incoming', data)
---         if p['Owner Index'] > 0 then
---             local owner = windower.ffxi.get_mob_by_index(p['Owner Index'])
---             if owner and is_party_member_or_pet(owner.id) then
---                 self.party_members[p['Pet ID']] = {is_pet = true, owner = owner.id}
---             end
---         end
---     end
--- end
-
--- function action_tracking:cache_party_members()
---     self.party_members = {}
---     local party = windower.ffxi.get_party()
---     if not party then return end
---     for i=0, (party.party1_count or 0) - 1 do
---         cache_party_member(party['p'..i])            
---     end
---     for i=0, (party.party2_count or 0) - 1 do
---         cache_party_member(party['a1'..i])            
---     end
---     for i=0, (party.party3_count or 0) - 1 do
---         cache_party_member(party['a2'..i])            
---     end
--- end
-
--- function action_tracking:cache_party_member(p)
---     if p and p.mob then
---         party_members[p.mob.id] = {is_pc = true,}
---         if p.mob.pet_index then
---             local pet = windower.ffxi.get_mob_by_index(p.mob.pet_index)
---             if pet then
---                 self.party_members[pet.id] = {is_pet = true, owner = p.id}
---             end
---         end
---     end
--- end
-
--- function is_party_member_or_pet(mob_id)
---     if mob_id == player_id then 
---         return true 
---     elseif self:is_npc(mob_id) then 
---         return false 
---     else
---         return mob_id
---     end
--- end
 
 function action_tracking:track_actions(ai)
     local actor_id = ai.actor_id
@@ -124,12 +57,22 @@ function action_tracking:track_actions(ai)
     if action_id == 0 then return end
     -- find the action
     local action_map = nil
+	
+	
+	
     if self.spell_message_ids:contains(ai.category) then
         action_map = resources.spells[action_id]
     elseif self.item_message_ids:contains(ai.category) then
         action_map = resources.items[action_id]
     elseif self:is_npc(actor_id) then
         action_map = resources.monster_abilities[action_id]
+		if not action_map then
+			if ai.category == 6 then
+				action_map = resources.job_abilities[action_id]
+			elseif self.weapon_skill_message_ids:contains(ai.category) then
+				action_map = resources.weapon_skills[action_id]
+			end
+		end
     elseif ai.category == 6 then
         action_map = resources.job_abilities[action_id]
     elseif self.weapon_skill_message_ids:contains(ai.category) then
@@ -144,14 +87,21 @@ function action_tracking:track_actions(ai)
         -- cast was interrupted
         self.tracked_actions[ai.actor_id] = nil;
     else
-        self.tracked_actions[ai.actor_id] = {actor_id=actor_id, target_id=ai.targets[1].id, ability=action_map, complete=false, time=os.time(), updated=false}
+        self.tracked_actions[ai.actor_id] = {actor_id=actor_id, target_name="", target_id=ai.targets[1].id, ability=action_map, complete=false, time=os.time(), updated=false}
+		if ai.targets[1].id == ai.actor_id then
+			self.tracked_actions[ai.actor_id].target_name = "(self)"
+		else
+			local name = windower.ffxi.get_mob_by_id(ai.targets[1].id).name
+			local new_name = name:sub(1,4)
+			local final_name = new_name.."."
+			self.tracked_actions[ai.actor_id].target_name = final_name
+		end
+
     end
 end
 
 function action_tracking:clean_tracked_actions()
-    -- print(self.clean_actions_tick)
 
-    local player = windower.ffxi.get_mob_by_target("me")
     local time = os.time()
     for id,action in pairs(self.tracked_actions) do
         -- for incomplete items, timeout at 30s.
@@ -163,38 +113,19 @@ function action_tracking:clean_tracked_actions()
         end
     end
 
-    -- for id,enmity in pairs(tracked_enmity) do
-    --     if time - enmity.time > 3 then
-    --         local mob = windower.ffxi.get_mob_by_id(enmity.mob)
-    --         if not mob or mob.hpp == 0 then
-    --             tracked_enmity[id] = nil
-    --         elseif mob.status == 0 then
-    --             tracked_enmity[id] = nil
-    --         elseif enmity.pc and not looking_at(mob, windower.ffxi.get_mob_by_id(enmity.pc)) then
-    --             tracked_enmity[id].pc = nil
-    --         elseif get_distance(player, mob) > 50 then
-    --             tracked_enmity[id] = nil
-    --         end
-    --     end
-    -- end
+end
 
-    -- for id,debuffs in pairs(self.tracked_debuff) do
-    --     local mob = windower.ffxi.get_mob_by_id(id)
-    --     if not mob or mob.hpp == 0 then
-    --         self.tracked_debuff[id] = nil
-    --     else
-    --         for i,debuff in ipairs(debuffs) do
-    --             -- if the duration is much longer than +50%, let's assume it wore. 
-    --             if time - debuff.time > debuff.duration * 1.5 then 
-    --                 self.tracked_debuff[id][debuff.effect] = nil
-    --             end
-    --         end
-    --     end
-    -- end
-
+function action_tracking:get_target_info(mob_id)
+	local target = windower.ffxi.get_mob_by_id(mob_id)
+	if target ~= nil then
+		return target.name
+	else
+		return nil
+	end
 end
 
 function action_tracking:is_npc(mob_id)
+	local mob = windower.ffxi.get_mob_by_id(mob_id)
     local is_pc = mob_id < 0x01000000
     local is_pet = mob_id > 0x01000000 and mob_id % 0x1000 > 0x700
 
@@ -202,7 +133,6 @@ function action_tracking:is_npc(mob_id)
     if is_pc or is_pet then return false end
 
     -- check if the mob is charmed
-    local mob = windower.ffxi.get_mob_by_id(mob_id)
     if not mob then return nil end
     return mob.is_npc and not mob.charmed
 end
