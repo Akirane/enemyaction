@@ -1,6 +1,6 @@
 _addon.name = 'EnemyAction'
 _addon.author = 'Akirane'
-_addon.version = '0.1'
+_addon.version = '0.3'
 _addon.language = 'English'
 _addon.commands = {'enemyaction','ea'}
 

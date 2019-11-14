@@ -91,10 +91,14 @@ function action_tracking:track_actions(ai)
 		if ai.targets[1].id == ai.actor_id then
 			self.tracked_actions[ai.actor_id].target_name = "(self)"
 		else
-			local name = windower.ffxi.get_mob_by_id(ai.targets[1].id).name
-			local new_name = name:sub(1,4)
-			local final_name = new_name.."."
-			self.tracked_actions[ai.actor_id].target_name = final_name
+			local target_table = windower.ffxi.get_mob_by_id(ai.targets[1].id)
+			if target_table ~= nil then
+				self.tracked_actions[ai.actor_id] = nil
+			else
+				local new_name = target_table.name:sub(1,4)
+				local final_name = new_name.."."
+				self.tracked_actions[ai.actor_id].target_name = final_name
+			end
 		end
 
     end
