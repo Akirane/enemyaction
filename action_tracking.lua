@@ -92,7 +92,7 @@ function action_tracking:track_actions(ai)
 			self.tracked_actions[ai.actor_id].target_name = "(self)"
 		else
 			local target_table = windower.ffxi.get_mob_by_id(ai.targets[1].id)
-			if target_table ~= nil then
+			if target_table == nil then
 				self.tracked_actions[ai.actor_id] = nil
 			else
 				local new_name = target_table.name:sub(1,4)
