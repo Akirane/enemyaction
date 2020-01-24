@@ -20,23 +20,29 @@ function initialize()
 end
 
 windower.register_event('prerender', function()
-    if action_msg_obj ~= nil then
-        action_msg_obj:clean()
-        action_msg_obj:prerender_update()
-    end
+	if ready == true then
+		if action_msg_obj ~= nil then
+			action_msg_obj:clean()
+			action_msg_obj:prerender_update()
+		end
+	end
 end)
 
 windower.register_event('incoming chunk', function(id, data)
-    if action_msg_obj ~= nil then
-        action_msg_obj:update(id, data, player_id)
-    end
+	if ready == true then
+		if action_msg_obj ~= nil then
+			action_msg_obj:update(id, data, player_id)
+		end
+	end
 end)
 
 windower.register_event('zone change', function()
-    if action_msg_obj ~= nil then
-		action_msg_obj:update_player_id()
-        action_msg_obj:reset_tracked_actions()
-    end
+	if ready == true then
+		if action_msg_obj ~= nil then
+			action_msg_obj:update_player_id()
+			action_msg_obj:reset_tracked_actions()
+		end
+	end
 end)
 
 windower.register_event('load', function()

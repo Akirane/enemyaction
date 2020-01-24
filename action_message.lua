@@ -102,7 +102,9 @@ function action_message:prerender_update()
 				self.message_box:color(100, 100, 255)
 				action.updated = true
 			end
-			self.message_box:text(action.ability.name.."->"..action.target_name)
+			if action.ability.name ~= nil then
+				self.message_box:text(action.ability.name.."->"..action.target_name)
+			end
 			self.message_box:show()
 		else
 			-- self.message_box:text(' ')
