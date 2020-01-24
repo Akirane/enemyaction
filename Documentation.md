@@ -1,76 +1,96 @@
-[Back to top](ReadMe.md)
+[Back to top](`ReadMe.md`)
 # Documentation
 ## Action Message
 
 
-#### function action_message:new(obj)
+#### function action_message:new(`obj`)
+----
 ##### Parameters:
-obj:
+`obj`:
 #### function action_message:update_player_id()
+----
 ##### Parameters:
-N/A
-#### function action_message:modify_y_pos(party_count)
+`N/A`
+#### function action_message:modify_y_pos(`party_count`)
+----
 ##### Parameters:
-party_count:
-#### function action_message:update(id, data)
+`party_count`:
+#### function action_message:update(`id, data`)
+----
 ##### Parameters:
-id:
-data:
+`id`:
+`data`:
 #### function action_message:prerender_update()
+----
 ##### Parameters:
-N/A
+`N/A`
 #### function action_message:clean()
+----
 ##### Parameters:
-N/A
+`N/A`
 #### function action_message:reset_tracked_actions()
+----
 ##### Parameters:
-N/A
+`N/A`
 
 ## Action Tracking
 
-----
 
-#### function action_tracking:new(obj) 
+#### function action_tracking:new(`obj`) 
+----
 ##### Parameters:
-obj:
-#### function action_tracking:handle_action_packet(id, data)
+`obj`:
+#### function action_tracking:handle_action_packet(`id, data`)
+----
 ##### Parameters:
-id:
-data:
-#### function action_tracking:track_actions(ai)
+`id`:
+`data`:
+#### function action_tracking:track_actions(`ai`)
+----
 ##### Parameters:
-ai:
+`ai`:
 #### function action_tracking:clean_tracked_actions()
+----
 ##### Parameters:
-N/A
-#### function action_tracking:get_target_info(mob_id)
+`N/A`
+#### function action_tracking:get_target_info(`mob_id`)
+----
 ##### Parameters:
-mob_id:
-#### function action_tracking:is_npc(mob_id)
+`mob_id`:
+#### function action_tracking:is_npc(`mob_id`)
+----
 ##### Parameters:
-mob_id:
+`mob_id`:
 #### function action_tracking:reset_tracked_actions()
+----
 ##### Parameters:
-N/A
-#### function action_tracking:new(obj) 
+`N/A`
+#### function action_tracking:new(`obj`) 
+----
 ##### Parameters:
-obj:
-#### function action_tracking:handle_action_packet(id, data)
+`obj`:
+#### function action_tracking:handle_action_packet(`id, data`)
+----
 ##### Parameters:
-id:
-data:
-#### function action_tracking:track_actions(ai)
+`id`:
+`data`:
+#### function action_tracking:track_actions(`ai`)
+----
 ##### Parameters:
-ai:
+`ai`:
 #### function action_tracking:clean_tracked_actions()
+----
 ##### Parameters:
-N/A
-#### function action_tracking:get_target_info(mob_id)
+`N/A`
+#### function action_tracking:get_target_info(`mob_id`)
+----
 ##### Parameters:
-mob_id:
-#### function action_tracking:is_npc(mob_id)
+`mob_id`:
+#### function action_tracking:is_npc(`mob_id`)
+----
 ##### Parameters:
-mob_id:
+`mob_id`:
 #### function action_tracking:reset_tracked_actions()
+----
 ##### Parameters:
-N/A
+`N/A`
