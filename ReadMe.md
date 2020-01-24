@@ -6,7 +6,7 @@ Old actions used are now shown with blue color.
 
 ## Documentation 
 
-[Documentation.md](Click here)
+[Click here](Documentation.md)
 
 ## Description
 
