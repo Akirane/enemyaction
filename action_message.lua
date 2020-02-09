@@ -1,13 +1,11 @@
+res = require ('resources')
 -- Meta class
 texts = require('texts')
--- table = require('table')
-
-action_tracking = require('action_tracking')
 
 local left_of_target_box = -180
 local init_count = 1
 
-
+-- Textbox for all actions your target are performing
 local message_box_setup = {
 	flags = {bold=true,draggable=false,right=true, bottom=true},
 	pos = { x = left_of_target_box, y = -51 - (20*init_count) },
@@ -21,6 +19,7 @@ local message_box_setup = {
 	}
 }
 
+-- Textbox for all actions you are performing
 local personal_box_setup = {
 	flags = {bold=true,draggable=false,right=true, bottom=true},
 	pos = { x = left_of_target_box, y = -81 - (20*init_count) },
@@ -34,18 +33,48 @@ local personal_box_setup = {
 	}
 }
 
+local casting_box_setup = {
+	flags = {bold=true,draggable=true,right=true, bottom=true},
+	pos = { x = -200, y = -400 },
+	bg = {visible=true},
+	font='Arial',
+	font_size=12,
+	show=false,
+	text={
+		color = {alpha=255, red=255, green=255, blue=255},
+		stroke={width=2,alpha=255,red=0,green=0,blue=0}
+	}
+}
+
 action_message = {}
 
+-- Constructor
 function action_message:new(obj)
 	obj = obj or {}
 	setmetatable(obj, self)
 	self.__index = self
 	self.tracker = action_tracking:new(nil)
 	self.party_count = 1
-	self.message_box = texts.new('Hello!', message_box_setup)
+	self.message_box = texts.new('Action box', message_box_setup)
 	self.personal_box = texts.new('Personal', personal_box_setup)
+	--self.casting_box = texts.new('Casting box', casting_box_setup)
+	--self.done_casting_box = texts.new("Casting!", casting_box_setup)
+	--self.casting_box:show()
+	--self.has_cast = false
 	return obj
 end
+
+--function action_message:update_casting(raw_action)
+--    target = windower.ffxi.get_mob_by_target('t')
+--	for index, value in ipairs(raw_action.targets) do
+--		if target.id ==  value.id then
+--			for y_index, y_value in ipairs(value.actions) do
+--				self.casting_box:text(string.format("DMG: %d", y_value.param))
+--				self.casting_box:text(string.format("DMG: %d", y_value.param))
+--			end
+--		end
+--	end
+--end
 
 function action_message:update_player_id()
     self.player_id = windower.ffxi.get_player().id
@@ -56,6 +85,12 @@ function action_message:modify_y_pos(party_count)
 	self.personal_box:pos_y(-81 - (20*party_count))
 end
 
+-- update:
+-- Description: 
+-- 	  Updates the message box. If there's no action the message box will hide automatically.
+-- Parameters:
+-- 	 id: If id is 0x028, then message box will be updated with a new action.
+-- 	 data: The original data packet. 
 function action_message:update(id, data)
 	if self.tracker:handle_action_packet(id, data) == true then
         target = windower.ffxi.get_mob_by_target('t')
@@ -86,6 +121,9 @@ function action_message:update(id, data)
 	end
 end
 
+-- prerender_update
+-- Description:
+-- 	  Updates the message box per frame.
 function action_message:prerender_update()
 
 	local new_count = windower.ffxi.get_party_info().party1_count
@@ -107,7 +145,6 @@ function action_message:prerender_update()
 			end
 			self.message_box:show()
 		else
-			-- self.message_box:text(' ')
 			self.message_box:hide()
 		end
 	else
@@ -124,7 +161,6 @@ function action_message:prerender_update()
 			self.personal_box:text(personal_action.ability.name.."->"..personal_action.target_name)
 			self.personal_box:show()
 		else
-			-- self.personal_box:text(' ')
 			self.personal_box:hide()
 		end
 	else
@@ -132,6 +168,9 @@ function action_message:prerender_update()
 	end
 end
 
+-- clean
+-- Description:
+-- 	  Clears the tracked actions, then hides the message box.
 function action_message:clean()
 
 	if self.tracker:clean_tracked_actions() == true then
