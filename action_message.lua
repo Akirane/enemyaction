@@ -141,7 +141,7 @@ function action_message:prerender_update()
 				action.updated = true
 			end
 			if action.ability.name ~= nil then
-				self.message_box:text(action.ability.name.."->"..action.target_name)
+				self.message_box:text(action.ability.name.." → "..action.target_name)
 			end
 			self.message_box:show()
 		else
@@ -158,8 +158,10 @@ function action_message:prerender_update()
 				self.personal_box:color(100, 100, 255)
 				personal_action.updated = true
 			end
-			self.personal_box:text(personal_action.ability.name.."->"..personal_action.target_name)
-			self.personal_box:show()
+			if (personal_action.ability ~= nil and personal_action.ability.name ~= nil)  then 
+				self.personal_box:text(personal_action.ability.name.." → "..personal_action.target_name)
+				self.personal_box:show()
+			end
 		else
 			self.personal_box:hide()
 		end
